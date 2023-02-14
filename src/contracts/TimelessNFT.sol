@@ -40,11 +40,13 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
     constructor(
         string memory _name,
         string memory _symbol,
-        uint256 _royalityFee,
-        address _artist
-    ) ERC721(_name, _symbol) {
+        uint256 _royalityFee
+    )
+        // address _artist
+        ERC721(_name, _symbol)
+    {
         royalityFee = _royalityFee;
-        artist = _artist;
+        // artist = _artist;
     }
 
     function payToMint(
@@ -57,9 +59,9 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
         require(existingURIs[metadataURI] == 0, "This NFT is already minted!");
         require(msg.sender != owner(), "Sales not allowed!");
 
-        uint256 royality = (msg.value * royalityFee) / 100;
-        payTo(artist, royality);
-        payTo(owner(), (msg.value - royality));
+        // uint256 royality = (msg.value * royalityFee) / 100;
+        // payTo(artist, royality);
+        payTo(owner(), msg.value);
 
         supply++;
 
@@ -90,7 +92,7 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
         require(msg.sender != minted[id - 1].owner, "Operation Not Allowed!");
 
         uint256 royality = (msg.value * royalityFee) / 100;
-        payTo(artist, royality);
+        payTo(owner(), royality);
         payTo(minted[id - 1].owner, (msg.value - royality));
 
         totalTx++;
@@ -121,7 +123,6 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
     function changePrice(uint256 id, uint256 newPrice) external returns (bool) {
         require(newPrice > 0 ether, "Ether too low!");
         require(msg.sender == minted[id - 1].owner, "Operation Not Allowed!");
-
         minted[id - 1].cost = newPrice;
         return true;
     }
